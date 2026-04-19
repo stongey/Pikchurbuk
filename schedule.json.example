@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Christmas Season",
+    "startDate": "12-15",
+    "endDate": "12-31",
+    "albumId": "replace-with-your-album-uuid",
+    "color": "#e74c3c"
+  },
+  {
+    "name": "Summer Holidays",
+    "startDate": "07-01",
+    "endDate": "08-15",
+    "albumId": "replace-with-another-uuid",
+    "color": "#3498db"
+  }
+]

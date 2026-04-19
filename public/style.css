@@ -1,0 +1,159 @@
+html, body { 
+    margin: 0; padding: 0; height: 100%; width: 100%; 
+    overflow: hidden; font-family: sans-serif; 
+}
+.bg-blur {
+    position: fixed; top: -10%; left: -10%; width: 120%; height: 120%;
+    background-size: cover; background-position: center;
+    -webkit-filter: blur(20px); filter: blur(20px);
+    -webkit-transform: translateZ(0); transform: translateZ(0);
+    z-index: 0;
+}
+img.main {
+    position: fixed; width: 100%; height: 100%;
+    object-fit: contain; z-index: 1;
+}
+.meta-container {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 10;
+    color: white;
+    text-shadow: -1px 0 rgba(0,0,0,0.8), 0 1px rgba(0,0,0,0.8), 1px 1px 5px rgba(0,0,0,0.8), 0 -1px rgba(0,0,0,0.8);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+.meta-container.is-scheduled {
+    border-left: 4px solid #f1c40f; /* Gold/Yellow accent */
+    padding-left: 15px;
+}
+.meta-date {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 3px;
+}
+.meta-location {
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    min-height: 1.2em; 
+    transition: opacity 0.3s ease;
+    display: none;
+}
+.meta-description {
+    margin-top: 6px;
+    font-size: 14px;
+    font-style: italic;
+    max-width: 400px;
+}
+#actionOverlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5); z-index: 500;
+    display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    -webkit-flex-direction: column; -webkit-align-items: center; -webkit-justify-content: center;
+}
+.action-btn {
+    border-radius: 50%; background: rgba(255, 255, 255, 0.2);
+    color: white; display: flex; align-items: center; justify-content: center;
+    display: -webkit-flex; -webkit-align-items: center; -webkit-justify-content: center;
+    cursor: pointer; transition: background 0.2s;
+}
+.action-btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.95); -webkit-transform: scale(0.95); }
+#btnRefresh { width: 110px; height: 110px; font-size: 80px; margin-bottom: 25px; }
+#btnSettings { width: 60px; height: 60px; font-size: 40px; }
+#settingsOverlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95); color: white;
+    z-index: 600; display: none; padding: 40px;
+    box-sizing: border-box; overflow-y: auto;
+}
+.settings-content { max-width: 400px; margin: 0 auto; }
+.settings-row { margin-bottom: 25px; }
+.settings-row label { display: block; margin-bottom: 8px; color: #888; text-transform: uppercase; font-size: 12px; }
+.settings-row select {
+    width: 100%; padding: 12px; background: #222; border: 1px solid #444;
+    color: white; border-radius: 8px; font-size: 16px;
+}
+.btn-close { 
+    text-align: center; margin-top: 40px; padding: 15px; background: #333; 
+    border-radius: 8px; cursor: pointer;
+}
+#nightOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: black;
+    z-index: 100;
+    display: none;
+    pointer-events: none;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    font-size: 1.5em;
+    text-align: center;
+    transition: opacity 2s linear;
+    opacity: 0;
+}
+.moon-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    box-shadow: -8px 20px 0 0 #1a1a1a;
+    -webkit-transform: rotate(35deg);
+    transform: rotate(35deg);
+    margin-bottom: 30px;
+    margin-right: -50px;
+    margin-top: -20px;
+}
+#exifOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    z-index: 200;
+    display: none;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    padding: 50px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+}
+.exif-grid {
+    display: table;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.exif-row { display: table-row; }
+.exif-label {
+    display: table-cell;
+    padding: 10px;
+    font-weight: bold;
+    color: #aaa;
+    text-transform: uppercase;
+    font-size: 14px;
+    vertical-align: top;
+}
+.exif-value {
+    display: table-cell;
+    padding: 10px;
+    font-size: 20px;
+}
+#mapContainer {
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    margin: 20px auto 0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+}
