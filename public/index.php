@@ -19,6 +19,7 @@ $mode = isset($_GET['mode']) ? $_GET['mode'] : 'random';
 $albumId = isset($_GET['albumId']) ? $_GET['albumId'] : '';
 $personId = isset($_GET['personId']) ? $_GET['personId'] : '';
 $delay = isset($_GET['delay']) ? intval($_GET['delay']) : 30;
+$schedule = ($_GET['schedule'] ?? 'true') !== 'false' ? 'true' : 'false';
 $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
 ?>
 <!DOCTYPE html>
@@ -40,6 +41,34 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
     <style>
         body { background-color: <?php echo ($bg === 'blur' ? '#000' : '#' . $bg); ?>; }
         .bg-blur { display: <?php echo ($bg === 'blur' ? 'block' : 'none'); ?>; }
+
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #3498db; }
+        input:checked + .slider:before { transform: translateX(22px); }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> <!-- version supported by old devices -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -74,11 +103,17 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
             <div class="settings-row">
                 <label>Slideshow Mode</label>
                 <select id="setMode">
-                    <option value="random" <?php echo $mode=='random'?'selected':''; ?>>Random Library</option>
+                    <option value="random" <?php echo $mode=='random'?'selected':''; ?>>Randomise Library</option>
                     <option value="memory" <?php echo $mode=='memory'?'selected':''; ?>>On This Day (Memories)</option>
                     <option value="mixed" <?php echo $mode=='mixed'?'selected':''; ?>>Mixed (Random + Memories)</option>
-                    <option value="schedule" <?php echo $mode=='schedule'?'selected':''; ?>>Scheduled Events</option>
                 </select>
+            </div>
+            <div class="settings-row">
+                <label>Auto-Schedule</label>
+                <label class="switch">
+                    <input type="checkbox" id="setSchedule" <?php echo $schedule=='true'?'checked':''; ?>>
+                    <span class="slider"></span>
+                </label>
             </div>
             <div class="settings-row">
                 <label>Background</label>
@@ -127,6 +162,7 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
             mode: "<?php echo $mode; ?>",
             albumId: "<?php echo $albumId; ?>",
             personId: "<?php echo $personId; ?>",
+            schedule: "<?php echo $schedule; ?>",
             delay: <?php echo $delay * 1000; ?>,
             bg: "<?php echo $bg; ?>"
         };

@@ -56,13 +56,15 @@ $immich = new ImmichClient(
 );
 
 $mode    = $_GET['mode'] ?? 'random';
+$useSchedules = ($_GET['schedule'] ?? 'true') !== 'false'; // Default true unless explicitly 'false'
+$delay   = isset($_GET['delay']) ? (int)$_GET['delay'] : (int)($_ENV['REFRESH_DELAY'] ?? 30);
 $albumId = $_GET['albumId'] ?? null;
 $personId = $_GET['personId'] ?? null;
 
 $scheduleName = null;
 $scheduleColor = null;
 
-if ($mode === 'schedule') {
+if ($useSchedules) {
     $schedulePath = __DIR__ . '/../schedule.json';
     $matchFound = false;
     
@@ -102,11 +104,6 @@ if ($mode === 'schedule') {
     } else {
         app_log("schedule.json not found at $schedulePath");
     }
-    
-    if (!$matchFound) {
-        app_log("No schedule match found. Falling back to random.");
-        $mode = 'random';
-    }
 }
 
 $asset = null;
@@ -114,7 +111,7 @@ $maxRetries = 5;
 
 for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
     $lightAsset = null;
-    if ($mode === 'memory' || $mode === 'schedule' || ($mode === 'mixed' && rand(0, 1) === 0)) {
+    if ($mode === 'memory' || !empty($scheduleName) || ($mode === 'mixed' && rand(0, 1) === 0)) {
         app_log("Attempting memory search for Album: " . ($albumId ?? 'All'));
         $lightAsset = $immich->getMemoryAsset($albumId, $personId);
     }
@@ -249,7 +246,7 @@ echo json_encode([
     'location'    => Metadata::formatLocation($asset['exifInfo'] ?? []),
     'date'        => $dateStr,
     'description' => $scheduleName ?: Metadata::formatDescription($asset['exifInfo'] ?? []),
-    'delay'       => (int)($_ENV['REFRESH_DELAY'] ?? 30),
+    'delay'       => $delay,
     'isNight'     => $isNight,
     'isScheduled' => !empty($scheduleName),
     'scheduleName' => $scheduleName,
