@@ -140,9 +140,10 @@ function showMap(lat, lon) {
 
     if (map === null) {
         map = L.map('mapContainer', { zoomControl: false }).setView([lat, lon], 12);
+        L.DomEvent.disableClickPropagation(container);
         //L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            subdomains: 'abcd',
+            subdomains: 'abc',
             maxZoom: 20
         }).addTo(map);
         marker = L.marker([lat, lon]).addTo(map);
