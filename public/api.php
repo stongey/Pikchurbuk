@@ -229,11 +229,18 @@ $info = array_filter($info, function($value) {
 });
 
 // Calculate memory info (On This Day)
-$photoDate = new \DateTime($asset['fileCreatedAt']);
-$yearsAgo = (int)date('Y') - (int)$photoDate->format('Y');
-$dateStr = Metadata::formatDate($asset['fileCreatedAt']);
-if ($yearsAgo > 0 && $photoDate->format('m-d') === date('m-d')) {
-    $unit = $yearsAgo === 1 ? " year ago today" : " years ago today";
+// Use dateTimeOriginal for historical accuracy, fallback to fileCreatedAt (upload date)
+$rawDate = $asset['exifInfo']['dateTimeOriginal'] ?? $asset['fileCreatedAt'];
+$photoDate = new \DateTime($rawDate);
+$photoDate->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+
+$currentDate = new \DateTime('now', new \DateTimeZone(date_default_timezone_get()));
+$yearsAgo = (int)$currentDate->format('Y') - (int)$photoDate->format('Y');
+$dateStr = Metadata::formatDate($rawDate);
+
+// Compare calendar dates (Month and Day) in the local timezone
+if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) {
+    $unit = ($yearsAgo === 1) ? " year ago today" : " years ago today";
     $dateStr .= " — " . $yearsAgo . $unit;
 }
 

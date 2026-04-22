@@ -92,18 +92,32 @@ class ImmichClient {
      * @return array|null
      */
     public function getMemoryAsset($albumId = null, $personId = null) {
-        $month = date('m');
-        $day   = date('d');
-        $currentYear = intval(date('Y'));
+        $userTz = new \DateTimeZone(date_default_timezone_get());
+        $now = new \DateTime('now', $userTz);
+        $month = (int)$now->format('m');
+        $day   = (int)$now->format('d');
+        $currentYear = (int)$now->format('Y');
 
-        for ($i = 0; $i < 40; $i++) {
-            $year = $currentYear - $i;
+        // Search back 100 years to catch scanned/historical photos
+        $years = range(1, 100);
+        // Shuffle years so that older photos (like 2021) have an equal chance against recent ones
+        shuffle($years);
+
+        foreach ($years as $diff) {
+            $year = $currentYear - $diff;
+
+            // Strict calendar day search (00:00:00 to 23:59:59) in local timezone
+            $start = new \DateTime("{$year}-{$month}-{$day} 00:00:00", $userTz);
+            $end   = new \DateTime("{$year}-{$month}-{$day} 23:59:59", $userTz);
+
+            $start->setTimezone(new \DateTimeZone('UTC'));
+            $end->setTimezone(new \DateTimeZone('UTC'));
+
             $payload = [
-                "size" => 10,
+                "size" => 20,
                 "type" => "IMAGE",
-                'withExif' => true,
-                "takenAfter" => "{$year}-{$month}-{$day}T00:00:00.000Z",
-                "takenBefore" => "{$year}-{$month}-{$day}T23:59:59.999Z"
+                "takenAfter" => $start->format('Y-m-d\TH:i:s\Z'),
+                "takenBefore" => $end->format('Y-m-d\TH:i:s\Z')
             ];
             if ($albumId) $payload["albumIds"] = [$albumId];
             if ($personId) $payload["personIds"] = [$personId];
