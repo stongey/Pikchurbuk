@@ -34,6 +34,17 @@ img.main {
     font-size: 24px;
     font-weight: 300;
     margin-bottom: 3px;
+    line-height: 0.95;
+}
+.memory-highlight {
+    color: #f1c40f; /* High-visibility Gold */
+    font-weight: normal;
+    font-style: italic;
+    font-size: 0.65em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    /* Optional: text-shadow for better legibility over light photos */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 .meta-location {
     font-size: 16px;

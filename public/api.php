@@ -238,7 +238,7 @@ $dateStr = Metadata::formatDate($rawDate);
 // Compare calendar dates (Month and Day) in the local timezone
 if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) {
     $unit = ($yearsAgo === 1) ? " year ago today" : " years ago today";
-    $dateStr .= " — " . $yearsAgo . $unit;
+    $dateStr .= "<br><span class='memory-highlight'>" . $yearsAgo . $unit . "</span>";
 }
 
 echo json_encode([
