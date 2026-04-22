@@ -9,7 +9,13 @@ use GuzzleHttp\Client;
  * Handles reverse geocoding with caching, date manipulation, and camera/lens string sanitization.
  */
 class Metadata {
-    private static $userAgent = 'Pikchurbuk/1.0';
+    /**
+     * Returns the User-Agent for external API calls.
+     * Nominatim requires a unique/descriptive string to avoid blocks.
+     */
+    private static function getUserAgent() {
+        return $_ENV['NOMINATIM_USER_AGENT'] ?? 'DEFAULT_AGENT_UNSET';
+    }
 
     /**
      * Map of strings to find and replace in the final location string.
@@ -105,6 +111,13 @@ class Metadata {
         }
 
         // 3. Perform Reverse Geocoding (Server-to-Server)
+        $userAgent = self::getUserAgent();
+
+        // Fail gracefully if User-Agent is not customized (Nominatim requirement)
+        if ($userAgent === 'DEFAULT_AGENT_UNSET' || strpos($userAgent, 'your-email-here') !== false) {
+            return "Location (Config Required)";
+        }
+
         $client = new Client(['base_uri' => $baseUrl, 'timeout' => 5.0]);
         
         try {
@@ -121,7 +134,7 @@ class Metadata {
                     'addressdetails' => 1,
                     'accept-language' => $lang
                 ],
-                'headers' => ['User-Agent' => self::$userAgent]
+                'headers' => ['User-Agent' => self::getUserAgent()]
             ]);
 
             $resData = json_decode($response->getBody(), true);
@@ -138,7 +151,7 @@ class Metadata {
         try {
             $res = $client->get('reverse', [
                 'query' => ['format' => 'json', 'lat' => $lat, 'lon' => $lon, 'zoom' => 10, 'addressdetails' => 1],
-                'headers' => ['User-Agent' => self::$userAgent]
+                'headers' => ['User-Agent' => self::getUserAgent()]
             ]);
             $data = json_decode($res->getBody(), true);
             //error_log("DEBUG EXIF DETAILS: " . print_r($data, true));

@@ -41,6 +41,7 @@ Pikchurbuk is a high-performance, web-based smart photo frame specifically desig
 | `NIGHT_MODE_START` | Hour to start night mode (24h format, default: 22). |
 | `NIGHT_MODE_END` | Hour to end night mode (24h format, default: 7). |
 | `EXCLUDED_TAG_IDS` | Comma-separated list of Immich tag IDs to ignore. |
+| `NOMINATIM_USER_AGENT` | Unique User-Agent for geocoding (e.g., `MyFrame/1.0 (contact@email.com)`). |
 
 ### Scheduled Events (`schedule.json`)
 
