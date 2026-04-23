@@ -75,7 +75,7 @@ function updateDisplay(data) {
             msgEl.style.fontSize = '0.8em';
             night.appendChild(msgEl);
         }
-        msgEl.innerHTML = "Night mode active<br><span style='opacity:0.5; font-size:0.7em;'>ZZZzzz...</span>";
+        msgEl.innerHTML = "Night mode active<br><span style='font-size:0.7em;'>ZZZzzz...</span>";
 
         return; 
     } else {
