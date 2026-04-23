@@ -18,7 +18,7 @@ $people = $immich->getPeople();
 $mode = isset($_GET['mode']) ? $_GET['mode'] : 'random';
 $albumId = isset($_GET['albumId']) ? $_GET['albumId'] : '';
 $personId = isset($_GET['personId']) ? $_GET['personId'] : '';
-$delay = isset($_GET['delay']) ? intval($_GET['delay']) : 30;
+$delay = isset($_GET['delay']) ? intval($_GET['delay']) : (int)($_ENV['REFRESH_DELAY'] ?? 30);
 $schedule = ($_GET['schedule'] ?? 'true') !== 'false' ? 'true' : 'false';
 $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
 ?>
