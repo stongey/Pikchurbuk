@@ -142,11 +142,8 @@ $megapixels = ($width && $height) ? round(($width * $height) / 1000000, 1) . ' M
 $lat   = $exif['latitude'] ?? null;
 $lon   = $exif['longitude'] ?? null;
 
+$dimensions = ($width && $height) ? "$width × $height" : "";
 $aspect = Metadata::getAspectRatio($width, $height);
-$resolution = $megapixels ? "$width × $height ($megapixels)" : "";
-if ($aspect && $aspect !== "$width:$height") {
-    $resolution = $resolution ? "$resolution — $aspect" : $aspect;
-}
 
 $make = trim($exif['make'] ?? '');
 $model = trim($exif['model'] ?? '');
@@ -204,18 +201,39 @@ if (!empty($asset['people'])) {
     }
 }
 
+$address = Metadata::formatLocation($asset['exifInfo'] ?? []);
+
+$rawSize = $asset['fileSizeInBytes'] ?? 
+           $asset['size'] ?? 
+           $asset['exifInfo']['fileSizeInByte'] ?? 
+           $asset['exifInfo']['fileSizeInBytes'] ??
+           $lightAsset['fileSizeInBytes'] ?? 
+           $lightAsset['size'] ?? 
+           $lightAsset['exifInfo']['fileSizeInByte'] ?? 
+           $lightAsset['exifInfo']['fileSizeInBytes'] ?? 0;
+
+app_log("Size Debug - Asset ID: {$asset['id']}");
+app_log("  asset[fileSizeInBytes]: " . ($asset['fileSizeInBytes'] ?? 'NOT SET'));
+app_log("  asset[size]: " . ($asset['size'] ?? 'NOT SET'));
+app_log("  asset[exifInfo][fileSizeInByte]: " . ($asset['exifInfo']['fileSizeInByte'] ?? 'NOT SET'));
+app_log("  lightAsset[fileSizeInBytes]: " . ($lightAsset['fileSizeInBytes'] ?? 'NOT SET'));
+app_log("  lightAsset[size]: " . ($lightAsset['size'] ?? 'NOT SET'));
+app_log("  Final bytes resolved: $rawSize");
+
 $info = [
     'People'     => implode(', ', $peopleList),
     'Camera'     => $camera,
     'Lens'       => $lens,
-    'Exposure'   => $exif['exposureTime'] ?? '',
-    'Aperture'   => isset($exif['fNumber']) ? 'f/' . $exif['fNumber'] : '',
+    'Exposure'   => isset($exif['exposureTime']) ? $exif['exposureTime'] . 's' : '',
+    'Aperture'   => isset($exif['fNumber']) ? 'ƒ' . $exif['fNumber'] : '',
     'ISO'        => $exif['iso'] ?? '',
     'Focal'      => isset($exif['focalLength']) ? $exif['focalLength'] . 'mm' : '',
-    'Resolution' => $resolution,
-    'Size'       => Metadata::formatFileSize($asset['fileSizeInBytes'] ?? 0),
+    'Dimensions' => $dimensions,
+    'MP'         => $megapixels,
+    'Aspect'     => $aspect,
+    'Size'       => Metadata::formatFileSize($rawSize),
     'File'       => $asset['originalPath'] ?? '',
-    'Location'   => ($lat && $lon) ? "$lat, $lon" : "",
+    'Location'   => ($lat && $lon) ? sprintf("%.4f, %.4f", $lat, $lon) : $address,
 ];
 
 $mapData = ($lat && $lon) ? ['lat' => $lat, 'lon' => $lon] : null;
@@ -243,7 +261,7 @@ if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) 
 
 echo json_encode([
     'id'          => $asset['id'],
-    'location'    => Metadata::formatLocation($asset['exifInfo'] ?? []),
+    'location'    => $address,
     'date'        => $dateStr,
     'description' => $scheduleName ?: Metadata::formatDescription($asset['exifInfo'] ?? []),
     'delay'       => $delay,

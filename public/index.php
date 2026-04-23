@@ -80,7 +80,6 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
     <div class="bg-blur" id="bgBlur"></div>
     <img class="main" id="mainImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
     <div id="exifOverlay" onclick="this.style.display='none'; if(event && event.stopPropagation) event.stopPropagation();">
-        <h1 style="font-weight: 200;">Photo Details</h1>
         <div id="exifContent" class="exif-grid"></div>
         <div id="mapContainer"></div>
         <p style="text-align:center; margin-top:50px; opacity:0.5;">Tap anywhere to close</p>

@@ -294,9 +294,13 @@ class Metadata {
     }
 
     public static function formatFileSize($bytes) {
-        if (!$bytes) return "";
-        $units = ['B', 'KB', 'MB', 'GB'];
-        $i = floor(log($bytes, 1024));
+        $bytes = (float)$bytes;
+        if ($bytes <= 0) return "0 B";
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $i = (int)floor(log($bytes) / log(1024));
+        $i = min($i, count($units) - 1);
+        // Ensure index is within bounds (at least 0 and no more than units array length)
+        $i = max(0, min($i, count($units) - 1));
         return round($bytes / pow(1024, $i), 1) . ' ' . $units[$i];
     }
 
