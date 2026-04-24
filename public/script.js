@@ -108,6 +108,15 @@ function updateDisplay(data) {
         locElement.style.display = 'none';
     }
 
+    var memElement = document.getElementById('uiMemory');
+    if (data.memory && data.memory.trim() !== "") {
+        memElement.innerHTML = data.memory;
+        memElement.style.display = 'block';
+    } else {
+        memElement.innerHTML = "";
+        memElement.style.display = 'none';
+    }
+
     var descElement = document.getElementById('uiDescription');
     if (data.description && data.description.trim() !== "") {
         descElement.innerHTML = data.description;
@@ -157,11 +166,11 @@ function toggleExif(e) {
     if (e && e.stopPropagation) e.stopPropagation();
     var overlay = document.getElementById('exifOverlay');
     var content = document.getElementById('exifContent');
-    var html = '<h1 style="font-weight: 200; text-align: left; margin-bottom: 30px;">Photo Details</h1>';
+    var html = '<h1 style="font-weight: 200; text-align: left; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">Photo Details</h1>';
 
     // 1. People
     if (currentExif['People']) {
-        html += '<div style="margin-bottom: 25px; text-align: left;">' +
+        html += '<div style="margin-bottom: 15px; text-align: left;">' +
                 '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">People</div>' +
                 '<div style="font-size:18px;">' + currentExif['People'] + '</div>' +
                 '</div>';
@@ -169,7 +178,7 @@ function toggleExif(e) {
 
     // 2. Camera Info
     if (currentExif['Camera']) {
-        html += '<div style="margin-bottom: 25px; text-align: left;">' +
+        html += '<div style="margin-bottom: 15px; text-align: left;">' +
                 '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">Camera</div>' +
                 '<div style="font-size:18px;">' + currentExif['Camera'] + '</div>' +
                 (currentExif['Lens'] ? '<div style="font-size:14px; color:#aaa; margin-top:4px;">' + currentExif['Lens'] + '</div>' : '') +
@@ -189,7 +198,7 @@ function toggleExif(e) {
         }
     });
     if (row1Content) {
-        html += '<table style="width:100%; table-layout: fixed; border-spacing: 0; margin-bottom: 25px;"><tr>' + row1Content + '</tr></table>';
+        html += '<table style="width:100%; table-layout: fixed; border-spacing: 0; margin-bottom: 15px;"><tr>' + row1Content + '</tr></table>';
     }
 
     // 4. Photo Size Info (Row 2)
@@ -209,12 +218,12 @@ function toggleExif(e) {
         }
     });
     if (row2Content) {
-        html += '<table style="width:100%; table-layout: fixed; border-spacing: 0; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 25px;"><tr>' + row2Content + '</tr></table>';
+        html += '<table style="width:100%; table-layout: fixed; border-spacing: 0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 15px;"><tr>' + row2Content + '</tr></table>';
     }
 
     // 5. File
     if (currentExif['File']) {
-        html += '<div style="margin-bottom: 25px; text-align: left;">' +
+        html += '<div style="margin-bottom: 15px; text-align: left; border-bottom: 1px solid #333; padding-bottom: 15px;">' +
                 '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">File Path</div>' +
                 '<div style="font-size:14px; word-break: break-all; color: #aaa;">' + currentExif['File'] + '</div>' +
                 '</div>';
@@ -230,7 +239,7 @@ function toggleExif(e) {
                        ' <svg viewBox="0 0 24 24" fill="currentColor" style="width: 1.1em; height: 1.1em; vertical-align: middle; margin-left: 4px;"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a>';
     }
 
-    html += '<div style="margin-bottom: 25px; text-align: left;">' +
+    html += '<div style="margin-bottom: 15px; text-align: left;">' +
             '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">Location</div>' +
             '<div style="font-size:18px;">' + locationLink + '</div>' +
             '</div>';

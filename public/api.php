@@ -252,17 +252,19 @@ $photoDate->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 $currentDate = new \DateTime('now', new \DateTimeZone(date_default_timezone_get()));
 $yearsAgo = (int)$currentDate->format('Y') - (int)$photoDate->format('Y');
 $dateStr = Metadata::formatDate($rawDate);
+$memoryStr = null;
 
 // Compare calendar dates (Month and Day) in the local timezone
 if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) {
     $unit = ($yearsAgo === 1) ? " year ago today" : " years ago today";
-    $dateStr .= "<br><span class='memory-highlight'>" . $yearsAgo . $unit . "</span>";
+    $memoryStr = $yearsAgo . $unit;
 }
 
 echo json_encode([
     'id'          => $asset['id'],
     'location'    => $address,
     'date'        => $dateStr,
+    'memory'      => $memoryStr,
     'description' => $scheduleName ?: Metadata::formatDescription($asset['exifInfo'] ?? []),
     'delay'       => $delay,
     'isNight'     => $isNight,

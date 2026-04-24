@@ -42,6 +42,11 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
         body { background-color: <?php echo ($bg === 'blur' ? '#000' : '#' . $bg); ?>; }
         .bg-blur { display: <?php echo ($bg === 'blur' ? 'block' : 'none'); ?>; }
 
+        .meta-container div {
+            margin-bottom: 8px; /* Equal spacing between metadata rows */
+        }
+        .meta-container div:last-child { margin-bottom: 0; }
+
         /* Toggle Switch Styling */
         .switch {
             position: relative;
@@ -151,6 +156,7 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
     </div>
     <div class="meta-container" id="metaBox" onclick="toggleExif(event)">
         <div class="meta-date" id="uiDate"></div>
+        <div class="memory-highlight" id="uiMemory"></div>
         <div class="meta-location" id="uiLocation"></div>
         <div class="meta-description" id="uiDescription"></div>
     </div>
