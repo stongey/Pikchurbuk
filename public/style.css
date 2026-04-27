@@ -30,24 +30,26 @@ img.main {
     border-left: 4px solid #f1c40f; /* Gold/Yellow accent */
     padding-left: 15px;
 }
+.meta-container div {
+    margin-bottom: 6px; /* Equal spacing between metadata rows */
+}
+.meta-container div:last-child { margin-bottom: 0; }
 .meta-date {
     font-size: 24px;
     font-weight: 300;
     margin-bottom: 3px;
-    line-height: 0.95;
 }
 .memory-highlight {
     color: #f1c40f; /* High-visibility Gold */
     font-weight: normal;
     font-style: italic;
-    font-size: 0.65em;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     /* Optional: text-shadow for better legibility over light photos */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); */
 }
 .meta-location {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -57,8 +59,8 @@ img.main {
     display: none;
 }
 .meta-description {
-    margin-top: 6px;
-    font-size: 14px;
+    /* margin-top: 6px; */
+    font-size: 15px;
     font-style: italic;
     max-width: 400px;
 }

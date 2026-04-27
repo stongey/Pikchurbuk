@@ -42,11 +42,6 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
         body { background-color: <?php echo ($bg === 'blur' ? '#000' : '#' . $bg); ?>; }
         .bg-blur { display: <?php echo ($bg === 'blur' ? 'block' : 'none'); ?>; }
 
-        .meta-container div {
-            margin-bottom: 8px; /* Equal spacing between metadata rows */
-        }
-        .meta-container div:last-child { margin-bottom: 0; }
-
         /* Toggle Switch Styling */
         .switch {
             position: relative;
