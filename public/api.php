@@ -145,6 +145,11 @@ $lon   = $exif['longitude'] ?? null;
 $dimensions = ($width && $height) ? "$width × $height" : "";
 $aspect = Metadata::getAspectRatio($width, $height);
 
+// Fix regression: do not show ratio if it is the same as the dimensions
+if ($aspect === "{$width}:{$height}") {
+    $aspect = "";
+}
+
 $make = trim($exif['make'] ?? '');
 $model = trim($exif['model'] ?? '');
 
