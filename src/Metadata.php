@@ -95,7 +95,8 @@ class Metadata {
         // 1. If no GPS coordinates, try Immich's built-in geodata
         if (!$lat || !$lon) {
             $parts = array_filter([$exif['city'] ?? '', $exif['state'] ?? '', $exif['country'] ?? '']);
-            return !empty($parts) ? implode(', ', $parts) : "";
+            $location = !empty($parts) ? implode(', ', $parts) : "";
+            return self::applyReplacements($location);
         }
 
         // 2. Check File Cache (~100m precision)
@@ -198,13 +199,20 @@ class Metadata {
 
     private static function parseGeocodeResponse($data) {
         $addr = $data['address'] ?? [];
-        $parts = array_filter([
-            $addr['city'] ?? $addr['town'] ?? $addr['village'] ?? '',
-            $addr['state'] ?? $addr['province'] ?? '',
-            $addr['country_code'] ?? ''
-        ]);
+        $locationParts = [];
+
+        if (!empty($addr['city'] ?? $addr['town'] ?? $addr['village'])) {
+            $locationParts[] = $addr['city'] ?? $addr['town'] ?? $addr['village'];
+        }
+        if (!empty($addr['state'] ?? $addr['province'])) {
+            $locationParts[] = $addr['state'] ?? $addr['province'];
+        }
+        // Only add country code if it's not USA or Canada
+        if (!in_array(strtoupper($addr['country_code'] ?? ''), ['US', 'CA']) && !empty($addr['country_code'])) {
+            $locationParts[] = $addr['country_code'];
+        }
         
-        $location = !empty($parts) ? implode(', ', $parts) : "Remote Location";
+        $location = !empty($locationParts) ? implode(', ', $locationParts) : "Remote Location";
         
         // APPLY REPLACEMENTS HERE
         return self::applyReplacements($location);
