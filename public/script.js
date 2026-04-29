@@ -170,7 +170,7 @@ function toggleExif(e) {
 
     // 1. People
     if (currentExif['People']) {
-        html += '<div style="margin-bottom: 15px; text-align: left;">' +
+        html += '<div style="margin-bottom: 15px; text-align: left; border-bottom: 1px solid #333; padding-bottom: 15px;">' +
                 '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">People</div>' +
                 '<div style="font-size:18px;">' + currentExif['People'] + '</div>' +
                 '</div>';
@@ -198,7 +198,7 @@ function toggleExif(e) {
         }
     });
     if (row1Content) {
-        html += '<table style="width:100%; table-layout: fixed; border-spacing: 0; margin-bottom: 15px;"><tr>' + row1Content + '</tr></table>';
+        html += '<table style="width:100%; table-layout: fixed; border-spacing: 0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 15px;"><tr>' + row1Content + '</tr></table>';
     }
 
     // 4. Photo Size Info (Row 2)
