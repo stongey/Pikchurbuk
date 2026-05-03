@@ -42,6 +42,12 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
         body { background-color: <?php echo ($bg === 'blur' ? '#000' : '#' . $bg); ?>; }
         .bg-blur { display: <?php echo ($bg === 'blur' ? 'block' : 'none'); ?>; }
 
+        /* Increase fade transition length for images and metadata */
+        .main, .bg-blur, .meta-container, #nightOverlay {
+            transition: opacity 0.75s ease-in-out;
+            -webkit-transition: opacity 0.75s ease-in-out;
+        }
+
         /* Toggle Switch Styling */
         .switch {
             position: relative;

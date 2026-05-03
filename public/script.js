@@ -42,105 +42,115 @@ function scheduleNext(delaySeconds) {
  * @param {Object} data - The JSON response from api.php
  */
 function updateDisplay(data) {
-    currentExif = data.exifDetails;
-    document.getElementById('exifOverlay').style.display = 'none';
-
     var img = document.getElementById('mainImg');
     var bgDiv = document.getElementById('bgBlur');
-    var night = document.getElementById('nightOverlay');
     var metaBox = document.getElementById('metaBox');
-    var locElement = document.getElementById('uiLocation');
+    var night = document.getElementById('nightOverlay');
 
-    // Clear memory from previous image for iPad 2 stability
-    if (bgDiv) bgDiv.style.backgroundImage = 'none';
-    img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
-    night.style.display = 'none';
+    // 1. Trigger fade out for the current image, background, and metadata
+    img.style.opacity = 0;
+    if (bgDiv) bgDiv.style.opacity = 0;
+    metaBox.style.opacity = 0;
     night.style.opacity = 0;
 
-    if (data.isNight) {
-        night.style.display = '-webkit-flex';
-        night.style.display = 'flex';
-        metaBox.style.opacity = 0;
-        setTimeout(function() {
-            night.style.opacity = 1;
-        }, 50);
+    // 2. Wait for the fade-out transition to finish (0.75s) before swapping content
+    setTimeout(function() {
+        currentExif = data.exifDetails;
+        document.getElementById('exifOverlay').style.display = 'none';
+        var locElement = document.getElementById('uiLocation');
 
-        var msgId = 'nightMsg';
-        var msgEl = document.getElementById(msgId);
-        if (!msgEl) {
-            msgEl = document.createElement('div');
-            msgEl.id = msgId;
-            msgEl.style.color = '#222';
-            msgEl.style.fontSize = '0.8em';
-            night.appendChild(msgEl);
-        }
-        msgEl.innerHTML = "Night mode active<br><span style='font-size:0.7em;'>ZZZzzz...</span>";
+        // Clear memory from previous image for iPad 2 stability
+        if (bgDiv) bgDiv.style.backgroundImage = 'none';
+        img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-        return; 
-    } else {
         night.style.display = 'none';
-    }
 
-    metaBox.style.opacity = 0;
+        if (data.isNight) {
+            night.style.display = '-webkit-flex';
+            night.style.display = 'flex';
+            setTimeout(function() {
+                night.style.opacity = 1;
+            }, 50);
 
-    var imageURL = "image.php?id=" + data.id + "&t=" + new Date().getTime();
-    img.src = imageURL;
+            var msgId = 'nightMsg';
+            var msgEl = document.getElementById(msgId);
+            if (!msgEl) {
+                msgEl = document.createElement('div');
+                msgEl.id = msgId;
+                msgEl.style.color = '#222';
+                msgEl.style.fontSize = '0.8em';
+                night.appendChild(msgEl);
+            }
+            msgEl.innerHTML = "Night mode active<br><span style='font-size:0.7em;'>ZZZzzz...</span>";
 
-    img.onload = function() {
-        document.getElementById('metaBox').style.opacity = 1;
-    };
-    
-    img.onerror = function() {
-        console.log("Image failed. Retrying in 5s...");
-        setTimeout(fetchNext, 5000);
-    };
+            return; 
+        } else {
+            night.style.display = 'none';
+        }
 
-    if (config.bg === 'blur') {
-        bgDiv.style.backgroundImage = "url('" + imageURL + "')";
-    }
+        var imageURL = "image.php?id=" + data.id + "&t=" + new Date().getTime();
+        img.src = imageURL;
 
-    if (data.location && data.location.trim() !== "") {
-        locElement.innerHTML = data.location;
-        locElement.style.display = 'block';
-    } else {
-        locElement.innerHTML = "";
-        locElement.style.display = 'none';
-    }
+        img.onload = function() {
+            // Delay ensures the browser registers the 0 opacity before fading in
+            setTimeout(function() {
+                img.style.opacity = 1;
+                if (bgDiv) bgDiv.style.opacity = 1;
+                metaBox.style.opacity = 1;
+            }, 50);
+        };
+        
+        img.onerror = function() {
+            console.log("Image failed. Retrying in 5s...");
+            setTimeout(fetchNext, 5000);
+        };
 
-    var memElement = document.getElementById('uiMemory');
-    if (data.memory && data.memory.trim() !== "") {
-        memElement.innerHTML = data.memory;
-        memElement.style.display = 'block';
-    } else {
-        memElement.innerHTML = "";
-        memElement.style.display = 'none';
-    }
+        if (config.bg === 'blur') {
+            bgDiv.style.backgroundImage = "url('" + imageURL + "')";
+        }
 
-    var descElement = document.getElementById('uiDescription');
-    if (data.description && data.description.trim() !== "") {
-        descElement.innerHTML = data.description;
-        descElement.style.display = 'block';
-    } else {
-        descElement.style.display = 'none';
-    }
+        if (data.location && data.location.trim() !== "") {
+            locElement.innerHTML = data.location;
+            locElement.style.display = 'block';
+        } else {
+            locElement.innerHTML = "";
+            locElement.style.display = 'none';
+        }
 
-    if (data.isScheduled) {
-        metaBox.className = "meta-container is-scheduled";
-        metaBox.style.borderLeftColor = data.scheduleColor || '';
-    } else {
-        metaBox.className = "meta-container";
-        metaBox.style.borderLeftColor = '';
-    }
+        var memElement = document.getElementById('uiMemory');
+        if (data.memory && data.memory.trim() !== "") {
+            memElement.innerHTML = data.memory;
+            memElement.style.display = 'block';
+        } else {
+            memElement.innerHTML = "";
+            memElement.style.display = 'none';
+        }
 
-    document.getElementById('uiDate').innerHTML = data.date;
-    currentMapsUrl = data.mapsUrl;
+        var descElement = document.getElementById('uiDescription');
+        if (data.description && data.description.trim() !== "") {
+            descElement.innerHTML = data.description;
+            descElement.style.display = 'block';
+        } else {
+            descElement.style.display = 'none';
+        }
 
-    if (data.map) {
-        showMap(data.map.lat, data.map.lon);
-    } else {
-        document.getElementById('mapContainer').style.display = 'none';
-    }
+        if (data.isScheduled) {
+            metaBox.className = "meta-container is-scheduled";
+            metaBox.style.borderLeftColor = data.scheduleColor || '';
+        } else {
+            metaBox.className = "meta-container";
+            metaBox.style.borderLeftColor = '';
+        }
+
+        document.getElementById('uiDate').innerHTML = data.date;
+        currentMapsUrl = data.mapsUrl;
+
+        if (data.map) {
+            showMap(data.map.lat, data.map.lon);
+        } else {
+            document.getElementById('mapContainer').style.display = 'none';
+        }
+    }, 750);
 }
 
 function showMap(lat, lon) {
