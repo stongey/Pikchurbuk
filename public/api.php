@@ -59,6 +59,7 @@ $mode    = $_GET['mode'] ?? 'random';
 $useSchedules = ($_GET['schedule'] ?? 'true') !== 'false'; // Default true unless explicitly 'false'
 $delay   = isset($_GET['delay']) ? (int)$_GET['delay'] : (int)($_ENV['REFRESH_DELAY'] ?? 30);
 $albumId = $_GET['albumId'] ?? null;
+$showName = ($_GET['showName'] ?? 'true') !== 'false';
 $personId = $_GET['personId'] ?? null;
 
 $scheduleName = null;
@@ -266,16 +267,18 @@ if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) 
 }
 
 // Add Album/Person name to metadata if in those modes
-if (!empty($personId)) {
-    $person = $immich->getPersonById($personId);
-    if ($person && !empty($person['name'])) {
-        $memoryStr = ($memoryStr ? $memoryStr . " • " : "") . $person['name'];
+if ($showName) {
+    if (!empty($personId)) {
+        $person = $immich->getPersonById($personId);
+        if ($person && !empty($person['name'])) {
+            $memoryStr = ($memoryStr ? $memoryStr . " • " : "") . $person['name'];
+        }
     }
-}
-if (!empty($albumId)) {
-    $album = $immich->getAlbumById($albumId);
-    if ($album && !empty($album['albumName'])) {
-        $memoryStr = ($memoryStr ? $memoryStr . " • " : "") . $album['albumName'];
+    if (!empty($albumId)) {
+        $album = $immich->getAlbumById($albumId);
+        if ($album && !empty($album['albumName'])) {
+            $memoryStr = ($memoryStr ? $memoryStr . " • " : "") . $album['albumName'];
+        }
     }
 }
 

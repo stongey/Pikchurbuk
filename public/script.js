@@ -288,7 +288,8 @@ function forceRefresh(e) {
 
 function updateSettings() {
     var scheduleEnabled = document.getElementById('setSchedule').checked ? 'true' : 'false';
-    var url = window.location.pathname + "?mode=" + document.getElementById('setMode').value + "&bg=" + document.getElementById('setBg').value + "&schedule=" + scheduleEnabled + "&delay=" + (config.delay / 1000);
+    var showName = document.getElementById('setShowName').checked ? 'true' : 'false';
+    var url = window.location.pathname + "?mode=" + document.getElementById('setMode').value + "&bg=" + document.getElementById('setBg').value + "&schedule=" + scheduleEnabled + "&delay=" + (config.delay / 1000) + "&showName=" + showName;
     var albumId = document.getElementById('setAlbum').value;
     var personId = document.getElementById('setPerson').value;
     if (albumId) url += "&albumId=" + albumId;

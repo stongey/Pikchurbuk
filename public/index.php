@@ -21,6 +21,7 @@ $personId = isset($_GET['personId']) ? $_GET['personId'] : '';
 $delay = isset($_GET['delay']) ? intval($_GET['delay']) : (int)($_ENV['REFRESH_DELAY'] ?? 30);
 $schedule = ($_GET['schedule'] ?? 'true') !== 'false' ? 'true' : 'false';
 $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
+$showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
 ?>
 <!DOCTYPE html>
 <html>
@@ -121,6 +122,13 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
                 </label>
             </div>
             <div class="settings-row">
+                <label>Display Name</label>
+                <label class="switch">
+                    <input type="checkbox" id="setShowName" <?php echo $showName=='true'?'checked':''; ?>>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="settings-row">
                 <label>Background</label>
                 <select id="setBg">
                     <option value="000000" <?php echo $bg!='blur'?'selected':''; ?>>Solid Black</option>
@@ -170,7 +178,8 @@ $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
             personId: "<?php echo $personId; ?>",
             schedule: "<?php echo $schedule; ?>",
             delay: <?php echo $delay * 1000; ?>,
-            bg: "<?php echo $bg; ?>"
+            bg: "<?php echo $bg; ?>",
+            showName: "<?php echo $showName; ?>"
         };
     </script>
     <script src="script.js?v=1.0"></script>
