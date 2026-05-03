@@ -265,6 +265,20 @@ if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) 
     $memoryStr = $yearsAgo . $unit;
 }
 
+// Add Album/Person name to metadata if in those modes
+if (!empty($personId)) {
+    $person = $immich->getPersonById($personId);
+    if ($person && !empty($person['name'])) {
+        $memoryStr = ($memoryStr ? $memoryStr . " • " : "") . $person['name'];
+    }
+}
+if (!empty($albumId)) {
+    $album = $immich->getAlbumById($albumId);
+    if ($album && !empty($album['albumName'])) {
+        $memoryStr = ($memoryStr ? $memoryStr . " • " : "") . $album['albumName'];
+    }
+}
+
 echo json_encode([
     'id'          => $asset['id'],
     'location'    => $address,

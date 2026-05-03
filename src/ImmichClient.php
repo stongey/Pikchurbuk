@@ -56,6 +56,24 @@ class ImmichClient {
         return json_decode($response->getBody(), true);
     }
 
+    public function getAlbumById($id) {
+        try {
+            $response = $this->client->get("api/albums/{$id}");
+            return json_decode($response->getBody(), true);
+        } catch (GuzzleException $e) {
+            return null;
+        }
+    }
+
+    public function getPersonById($id) {
+        try {
+            $response = $this->client->get("api/people/{$id}");
+            return json_decode($response->getBody(), true);
+        } catch (GuzzleException $e) {
+            return null;
+        }
+    }
+
     public function getAlbums() {
         try {
             $response = $this->client->get('api/albums?take=500');
