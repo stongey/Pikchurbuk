@@ -17,27 +17,18 @@ class Metadata {
         return $_ENV['NOMINATIM_USER_AGENT'] ?? 'DEFAULT_AGENT_UNSET';
     }
 
-    /**
-     * Map of strings to find and replace in the final location string.
-     * format: 'Search Term' => 'Replacement Term'
-     */
-    private static $geoReplacements = [
-        'United States of America' => 'USA',
-        'United Kingdom'           => 'UK',
-        'Province of '             => '',
-        'State of '                => '',
-        'District of '              => '',
-        'Region of '                => '',
-        'County of '                => '',
-        'Prefecture of '            => '',
-        ' Municipal Unit'           => '',
-        'Municipality of '          => '',
-        'City of '                  => '',
-        'Sofia-City'                => 'Sofia',
-        'Rideau Lakes'              => 'Knowles Cottage',
-        'Sintra (Santa Maria e São Miguel, São Martinho e São Pedro de Penaferrim), Sintra, ' => 'Sintra, ',
-        // Add your custom ones here
-    ];
+    private static function getGeoReplacements() {
+        static $replacements = null;
+        if ($replacements !== null) return $replacements;
+
+        $path = __DIR__ . '/../replacements.json';
+        if (file_exists($path)) {
+            $replacements = json_decode(file_get_contents($path), true) ?? [];
+        } else {
+            $replacements = [];
+        }
+        return $replacements;
+    }
 
     /**
      * List of manufacturer-specific strings to remove from descriptions.
@@ -58,7 +49,7 @@ class Metadata {
     private static function applyReplacements($locationString) {
         if (empty($locationString)) return "";
 
-        foreach (self::$geoReplacements as $search => $replace) {
+        foreach (self::getGeoReplacements() as $search => $replace) {
             $locationString = str_replace($search, $replace, $locationString);
         }
 
