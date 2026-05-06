@@ -53,7 +53,8 @@ function updateDisplay(data) {
     metaBox.style.opacity = 0;
     night.style.opacity = 0;
 
-    // 2. Wait for the fade-out transition to finish (0.75s) before swapping content
+    // 2. Wait for the fade-out transition to finish before swapping content
+    var transitionDelay = (config.transitionSpeed * 1000) + 200;
     setTimeout(function() {
         currentExif = data.exifDetails;
         document.getElementById('exifOverlay').style.display = 'none';
@@ -150,7 +151,7 @@ function updateDisplay(data) {
         } else {
             document.getElementById('mapContainer').style.display = 'none';
         }
-    }, 750);
+    }, transitionDelay);
 }
 
 function showMap(lat, lon) {

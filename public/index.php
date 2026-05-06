@@ -21,6 +21,7 @@ $personId = isset($_GET['personId']) ? $_GET['personId'] : '';
 $delay = isset($_GET['delay']) ? intval($_GET['delay']) : (int)($_ENV['REFRESH_DELAY'] ?? 30);
 $schedule = ($_GET['schedule'] ?? 'true') !== 'false' ? 'true' : 'false';
 $bg = isset($_GET['bg']) ? $_GET['bg'] : '000000';
+$transitionSpeed = $_ENV['TRANSITION_SPEED'] ?? '0.55';
 $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
 ?>
 <!DOCTYPE html>
@@ -45,8 +46,8 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
 
         /* Increase fade transition length for images and metadata */
         .main, .bg-blur, .meta-container, #nightOverlay {
-            transition: opacity 0.75s ease-in-out;
-            -webkit-transition: opacity 0.75s ease-in-out;
+            transition: opacity <?php echo $transitionSpeed; ?>s ease-in-out;
+            -webkit-transition: opacity <?php echo $transitionSpeed; ?>s ease-in-out;
         }
 
         /* Toggle Switch Styling */
@@ -178,6 +179,7 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
             personId: "<?php echo $personId; ?>",
             schedule: "<?php echo $schedule; ?>",
             delay: <?php echo $delay * 1000; ?>,
+            transitionSpeed: <?php echo $transitionSpeed; ?>,
             bg: "<?php echo $bg; ?>",
             showName: "<?php echo $showName; ?>"
         };
