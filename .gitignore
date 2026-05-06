@@ -1,4 +1,6 @@
 .env
 schedule.json
+replacements.json
+
 vendor/
 cache/
