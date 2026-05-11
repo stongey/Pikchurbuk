@@ -162,6 +162,7 @@ img.main {
     display: table-cell;
     padding: 10px;
     font-size: 20px;
+    vertical-align: top;
 }
 #mapContainer {
     width: 100%;

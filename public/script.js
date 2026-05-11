@@ -202,7 +202,7 @@ function toggleExif(e) {
     row1Keys.forEach(function(key) {
         if (currentExif[key] && currentExif[key] !== "") {
             var label = key === 'Exposure' ? 'Shutter' : (key === 'Aperture' ? 'F-Stop' : key);
-            row1Content += '<td style="padding: 5px 0; text-align: left;">' +
+            row1Content += '<td style="padding: 5px 0; text-align: left; vertical-align: top;">' +
                     '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">' + label + '</div>' +
                     '<div style="font-size:18px; font-weight: 300;">' + currentExif[key] + '</div>' +
                     '</td>';
@@ -222,7 +222,7 @@ function toggleExif(e) {
             if (key === 'Aspect') label = 'Ratio';
             if (key === 'Size') label = 'File Size';
             
-            row2Content += '<td style="padding: 5px 0; text-align: left;">' +
+            row2Content += '<td style="padding: 5px 0; text-align: left; vertical-align: top;">' +
                     '<div style="color:#888; font-size:10px; text-transform: uppercase; margin-bottom: 4px;">' + label + '</div>' +
                     '<div style="font-size:18px; font-weight: 300;">' + currentExif[key] + '</div>' +
                     '</td>';
