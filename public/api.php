@@ -176,6 +176,7 @@ if ($lens !== '') {
 }
 
 $peopleList = [];
+$firstNames = [];
 if (!empty($asset['people'])) {
     $people = $asset['people'];
 
@@ -204,6 +205,10 @@ if (!empty($asset['people'])) {
 
         $age = Metadata::calculateAge($asset['fileCreatedAt'], $person['birthDate'] ?? null);
         $peopleList[] = "<span style='white-space: nowrap;'>" . $name . ($age ? " <span style='font-size: 0.85em; opacity: 0.7;'>($age)</span>" : "") . "</span>";
+
+        // Extract first name for fallback description
+        $nameParts = explode(' ', trim($name));
+        $firstNames[] = htmlspecialchars($nameParts[0]);
     }
 }
 
@@ -266,6 +271,12 @@ if ($yearsAgo > 0 && $photoDate->format('m-d') === $currentDate->format('m-d')) 
     $memoryStr = $yearsAgo . $unit;
 }
 
+// Determine description: Schedule -> Metadata Description -> First Names Fallback
+$description = $scheduleName ?: Metadata::formatDescription($asset['exifInfo'] ?? []);
+if (empty($description) && !empty($firstNames)) {
+    $description = implode(', ', $firstNames);
+}
+
 // Add Album/Person name to metadata if in those modes
 if ($showName) {
     if (!empty($personId)) {
@@ -287,7 +298,7 @@ echo json_encode([
     'location'    => $address,
     'date'        => $dateStr,
     'memory'      => $memoryStr,
-    'description' => $scheduleName ?: Metadata::formatDescription($asset['exifInfo'] ?? []),
+    'description' => $description,
     'delay'       => $delay,
     'isNight'     => $isNight,
     'isScheduled' => !empty($scheduleName),
