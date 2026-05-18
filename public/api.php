@@ -108,10 +108,20 @@ if ($useSchedules) {
 }
 
 $asset = null;
-$maxRetries = 5;
+$lightAsset = null;
 
-for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
-    $lightAsset = null;
+// Priority 1: Check if a specific asset ID was requested in the URL
+$specificId = $_GET['id'] ?? null;
+if ($specificId) {
+    $asset = $immich->getAssetById($specificId);
+    if (!$immich->isAssetValid($asset)) {
+        $asset = null;
+    }
+}
+
+$maxRetries = 5;
+for ($attempt = 0; $asset === null && $attempt < $maxRetries; $attempt++) {
+    $lightAsset = null; // Reset for each search attempt
     if ($mode === 'memory' || !empty($scheduleName) || ($mode === 'mixed' && rand(0, 1) === 0)) {
         app_log("Attempting memory search for Album: " . ($albumId ?? 'All'));
         $lightAsset = $immich->getMemoryAsset($albumId, $personId);
@@ -214,6 +224,8 @@ if (!empty($asset['people'])) {
 
 $address = Metadata::formatLocation($asset['exifInfo'] ?? []);
 
+// Ensure lightAsset is at least an empty array for safe logging and size fallback logic
+$lightAsset = $lightAsset ?: [];
 $rawSize = $asset['fileSizeInBytes'] ?? 
            $asset['size'] ?? 
            $asset['exifInfo']['fileSizeInByte'] ?? 

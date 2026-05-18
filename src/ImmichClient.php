@@ -52,8 +52,12 @@ class ImmichClient {
     }
 
     public function getAssetById($id) {
-        $response = $this->client->get("api/assets/{$id}");
-        return json_decode($response->getBody(), true);
+        try {
+            $response = $this->client->get("api/assets/{$id}");
+            return json_decode($response->getBody(), true);
+        } catch (GuzzleException $e) {
+            return null;
+        }
     }
 
     public function getAlbumById($id) {
@@ -171,6 +175,9 @@ class ImmichClient {
      * @return bool True if the asset is valid (no excluded tags), false otherwise
      */
     public function isAssetValid($asset) {
+        if (!$asset || !is_array($asset)) {
+            return false;
+        }
         if (empty($this->excludedTagIDs)) return true;
 
         // Check 'tags' array (objects with 'id' property)
