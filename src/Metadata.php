@@ -198,8 +198,14 @@ class Metadata {
         if (!empty($addr['state'] ?? $addr['province'])) {
             $locationParts[] = $addr['state'] ?? $addr['province'];
         }
-        // Only add country code if it's not USA or Canada
-        if (!in_array(strtoupper($addr['country_code'] ?? ''), ['US', 'CA']) && !empty($addr['country_code'])) {
+        
+        $cc = strtoupper($addr['country_code'] ?? '');
+        // Handle Vatican City (VA) specifically: do not show 'VA', show 'Vatican City'
+        if ($cc === 'VA') {
+            if (empty($locationParts)) {
+                $locationParts[] = "Vatican City";
+            }
+        } elseif (!in_array($cc, ['US', 'CA']) && !empty($cc)) {
             $locationParts[] = $addr['country_code'];
         }
         
