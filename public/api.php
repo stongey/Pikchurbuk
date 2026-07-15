@@ -187,42 +187,45 @@ if ($lens !== '') {
 
 $peopleList = [];
 $firstNames = [];
-if (!empty($asset['people'])) {
-    $people = $asset['people'];
 
-    // Sort people by location in photo: Left to Right, then Top to Bottom
-    usort($people, function($a, $b) {
-        // Fallback to nested faces array if top-level coordinates are missing
-        $fa = (!empty($a['faces']) && is_array($a['faces'])) ? $a['faces'][0] : $a;
-        $fb = (!empty($b['faces']) && is_array($b['faces'])) ? $b['faces'][0] : $b;
 
-        $ax = $fa['x1'] ?? $fa['boundingBoxX1'] ?? null;
-        $ay = $fa['y1'] ?? $fa['boundingBoxY1'] ?? null;
-        $bx = $fb['x1'] ?? $fb['boundingBoxX1'] ?? null;
-        $by = $fb['y1'] ?? $fb['boundingBoxY1'] ?? null;
+// In Immich v3, the asset response no longer contains people. 
+// We must fetch faces directly from the dedicated faces API endpoint.
+$faces = $immich->getAssetFaces($asset['id']) ?? [];
 
-        // Push people without face coordinates to the end
+if (!empty($faces) && is_array($faces)) {
+    // Sort faces by spatial location in the photo: Left to Right, then Top to Bottom
+    usort($faces, function($a, $b) {
+        // v3 coordinates standard: boundingBoxX1, boundingBoxX2, etc.
+        $ax = $a['boundingBoxX1'] ?? null;
+        $ay = $a['boundingBoxY1'] ?? null;
+        $bx = $b['boundingBoxX1'] ?? null;
+        $by = $b['boundingBoxY1'] ?? null;
+
+        // Push faces without coordinates to the end
         if ($ax === null && $bx === null) return 0;
         if ($ax === null) return 1;
         if ($bx === null) return -1;
 
+        // Space sorting: Left-to-Right first, then Top-to-Bottom fallback
         return ($ax <=> $bx) ?: ($ay <=> $by);
     });
 
-    foreach ($people as $person) {
+    foreach ($faces as $face) {
+        $person = $face['person'] ?? null;
+        if (!$person) continue;
+
         $name = $person['name'] ?? '';
         if (empty($name)) continue;
 
         $age = Metadata::calculateAge($asset['fileCreatedAt'], $person['birthDate'] ?? null);
-        $peopleList[] = "<span style='white-space: nowrap;'>" . $name . ($age ? " <span style='font-size: 0.85em; opacity: 0.7;'>($age)</span>" : "") . "</span>";
+        $peopleList[] = "<span style='white-space: nowrap;'>" . htmlspecialchars($name) . ($age ? " <span style='font-size: 0.85em; opacity: 0.7;'>($age)</span>" : "") . "</span>";
 
         // Extract first name for fallback description
-        // Define common honorifics (with or without trailing periods)
-        // E.g., Dr, Dr., Fr, Fr., Mr, Mr., Ms, Mrs, Prof, Rev, etc.
         $honorificsPattern = '/^(dr|fr|mr|ms|mrs|prof|rev|sr|br|msgr|reverend|father|doctor|mme|m|)\.?$/i';
-        $cleanName = preg_replace('/\s+/', ' ', trim($name ?? ''));
+        $cleanName = preg_replace('/\s+/', ' ', trim($name));
         $nameParts = explode(' ', trim($cleanName));
-        // Find the first part that isn't a title
+        
         $firstName = 'Guest'; // Fallback default
         foreach ($nameParts as $part) {
             if (!preg_match($honorificsPattern, $part) && $part !== '') {
@@ -233,6 +236,7 @@ if (!empty($asset['people'])) {
         $firstNames[] = htmlspecialchars($firstName);
     }
 }
+
 
 $address = Metadata::formatLocation($asset['exifInfo'] ?? []);
 

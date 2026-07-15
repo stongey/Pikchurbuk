@@ -78,6 +78,25 @@ class ImmichClient {
         }
     }
 
+    /**
+     * Retrieve face details (including coordinates and associated person) 
+     * for a specific asset. Corresponds to GET /api/faces?id={id} in Immich v3.
+     *
+     * @param string $id Asset UUID
+     * @return array
+     */
+    public function getAssetFaces($id) {
+        try {
+            $response = $this->client->get('api/faces', [
+                'query' => ['id' => $id]
+            ]);
+            return json_decode($response->getBody(), true) ?? [];
+        } catch (GuzzleException $e) {
+            // Optional: error_log("Pikchurbuk: Failed to fetch faces: " . $e->getMessage());
+            return [];
+        }
+    }
+
     public function getAlbums() {
         try {
             $response = $this->client->get('api/albums?take=500');
