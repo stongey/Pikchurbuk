@@ -217,8 +217,20 @@ if (!empty($asset['people'])) {
         $peopleList[] = "<span style='white-space: nowrap;'>" . $name . ($age ? " <span style='font-size: 0.85em; opacity: 0.7;'>($age)</span>" : "") . "</span>";
 
         // Extract first name for fallback description
-        $nameParts = explode(' ', trim($name));
-        $firstNames[] = htmlspecialchars($nameParts[0]);
+        // Define common honorifics (with or without trailing periods)
+        // E.g., Dr, Dr., Fr, Fr., Mr, Mr., Ms, Mrs, Prof, Rev, etc.
+        $honorificsPattern = '/^(dr|fr|mr|ms|mrs|prof|rev|sr|br|msgr|reverend|father|doctor|mme|m|)\.?$/i';
+        $cleanName = preg_replace('/\s+/', ' ', trim($name ?? ''));
+        $nameParts = explode(' ', trim($cleanName));
+        // Find the first part that isn't a title
+        $firstName = 'Guest'; // Fallback default
+        foreach ($nameParts as $part) {
+            if (!preg_match($honorificsPattern, $part) && $part !== '') {
+                $firstName = $part;
+                break;
+            }
+        }
+        $firstNames[] = htmlspecialchars($firstName);
     }
 }
 
