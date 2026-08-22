@@ -41,7 +41,12 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
     <meta name="theme-color" content="#000000">
     <link rel="stylesheet" href="style.css?v=1.0">
     <style>
-        body { background-color: <?php echo ($bg === 'blur' ? '#000' : '#' . $bg); ?>; }
+        /* Required for iOS 9/iPad 2 body click bubbling */
+        body { 
+            background-color: <?php echo ($bg === 'blur' ? '#000' : '#' . $bg); ?>; 
+            cursor: pointer; 
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
         .bg-blur { display: <?php echo ($bg === 'blur' ? 'block' : 'none'); ?>; }
 
         /* Increase fade transition length for images and metadata */
@@ -77,34 +82,66 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
         }
         input:checked + .slider { background-color: #3498db; }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Overlay Close Buttons (Legacy/iPad 2 Centering) */
+        #exifCloseBtn, #settingsCloseBtn, #actionCloseBtn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border-radius: 22px;
+            -webkit-border-radius: 22px;
+            cursor: pointer;
+            z-index: 1001;
+            overflow: hidden;
+            font-size: 0;
+        }
+
+        #exifCloseBtn::before, #settingsCloseBtn::before, #actionCloseBtn::before {
+            content: "×";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -52%);
+            transform: translate(-50%, -52%);
+            font-size: 28px;
+            font-family: Arial, sans-serif;
+            line-height: 1;
+            color: #ffffff;
+        }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> <!-- version supported by old devices -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
-<body onclick="toggleActionOverlay(event)">
+<body>
     <div id="nightOverlay">
         <div class="moon-icon"></div>
     </div>
     <div class="bg-blur" id="bgBlur"></div>
     <img class="main" id="mainImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-    <div id="exifOverlay" onclick="this.style.display='none'; if(event && event.stopPropagation) event.stopPropagation();">
+    <div id="exifOverlay" onclick="if(event && event.stopPropagation) event.stopPropagation();">
+        <div id="exifCloseBtn" onclick="document.getElementById('exifOverlay').style.display='none'; if(event && event.stopPropagation) event.stopPropagation();"></div>
         <div id="exifContent" class="exif-grid"></div>
         <div id="mapContainer"></div>
-        <p style="text-align:center; margin-top:50px; opacity:0.5;">Tap anywhere to close</p>
     </div>
-    <div id="actionOverlay" style="display: none;">
-        <div class="action-btn" id="btnRefresh" onclick="forceRefresh(event)">
+    <div id="actionOverlay" style="display: none;" onclick="if(event && event.stopPropagation) event.stopPropagation();">
+        <div id="actionCloseBtn" onclick="if(typeof toggleActionOverlay==='function') toggleActionOverlay(event);"></div>
+        <div class="action-btn" id="btnRefresh" onclick="if(typeof forceRefresh==='function') forceRefresh(event);">
             <svg viewBox="0 0 24 24" fill="currentColor" style="width: 1em; height: 1em;">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
             </svg>
         </div>
-        <div class="action-btn" id="btnSettings" onclick="toggleSettings(event)">
+        <div class="action-btn" id="btnSettings" onclick="if(typeof toggleSettings==='function') toggleSettings(event);">
             <svg viewBox="0 0 24 24" fill="currentColor" style="width: 1em; height: 1em;">
-                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/>
             </svg>
         </div>
     </div>
-    <div id="settingsOverlay">
+    <div id="settingsOverlay" onclick="if(event && event.stopPropagation) event.stopPropagation();">
+        <div id="settingsCloseBtn" onclick="if(typeof toggleSettings==='function') toggleSettings(event);"></div>
         <div class="settings-content">
             <h1 style="font-weight: 200; margin-bottom: 30px;">Settings</h1>
             <div class="settings-row">
@@ -160,11 +197,10 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="btn-close" onclick="updateSettings()">Apply & Reload</div>
-            <div class="btn-close" style="background:transparent;" onclick="toggleSettings(event)">Cancel</div>
+            <div class="btn-close" onclick="if(typeof updateSettings==='function') updateSettings();">Apply & Reload</div>
         </div>
     </div>
-    <div class="meta-container" id="metaBox" onclick="toggleExif(event)">
+    <div class="meta-container" id="metaBox" onclick="if(typeof toggleExif==='function') toggleExif(event);">
         <div class="meta-date" id="uiDate"></div>
         <div class="memory-highlight" id="uiMemory"></div>
         <div class="meta-location" id="uiLocation"></div>
@@ -185,5 +221,13 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
         };
     </script>
     <script src="script.js?v=1.0"></script>
+    <script>
+        // Bind body click safely after script.js loads
+        document.body.onclick = function(e) {
+            if (typeof toggleActionOverlay === 'function') {
+                toggleActionOverlay(e);
+            }
+        };
+    </script>
 </body>
 </html>
