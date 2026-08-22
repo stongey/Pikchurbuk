@@ -49,8 +49,8 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
         }
         .bg-blur { display: <?php echo ($bg === 'blur' ? 'block' : 'none'); ?>; }
 
-        /* Increase fade transition length for images and metadata */
-        .main, .bg-blur, .meta-container, #nightOverlay {
+        /* Unified transition timing for seamless fade-in and fade-out */
+        .main, .bg-blur, .meta-container, #nightOverlay, #actionOverlay, #settingsOverlay, #exifOverlay {
             transition: opacity <?php echo $transitionSpeed; ?>s ease-in-out;
             -webkit-transition: opacity <?php echo $transitionSpeed; ?>s ease-in-out;
         }
@@ -112,6 +112,11 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
             line-height: 1;
             color: #ffffff;
         }
+
+        /* Ensure SVG icons do not intercept touches on iPad 2 */
+        .action-btn svg {
+            pointer-events: none;
+        }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> <!-- version supported by old devices -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -129,7 +134,7 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
     </div>
     <div id="actionOverlay" style="display: none;" onclick="if(event && event.stopPropagation) event.stopPropagation();">
         <div id="actionCloseBtn" onclick="if(typeof toggleActionOverlay==='function') toggleActionOverlay(event);"></div>
-        <div class="action-btn" id="btnRefresh" onclick="if(typeof forceRefresh==='function') forceRefresh(event);">
+        <div class="action-btn" id="btnRefresh" onclick="triggerSmoothRefresh(event);" ontouchstart="triggerSmoothRefresh(event);">
             <svg viewBox="0 0 24 24" fill="currentColor" style="width: 1em; height: 1em;">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
             </svg>
@@ -219,6 +224,45 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
             bg: "<?php echo $bg; ?>",
             showName: "<?php echo $showName; ?>"
         };
+
+        // Flags to prevent double-triggering from touchstart + click
+        var isRefreshing = false;
+
+        function triggerSmoothRefresh(e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            if (e && e.preventDefault) e.preventDefault();
+            
+            if (isRefreshing) return;
+            isRefreshing = true;
+
+            var ids = ['mainImg', 'bgBlur', 'metaBox', 'actionOverlay', 'settingsOverlay', 'exifOverlay'];
+            
+            // 1. Force opacity to 0 using cssText to override inline/stylesheet conflicts
+            for (var i = 0; i < ids.length; i++) {
+                var el = document.getElementById(ids[i]);
+                if (el) {
+                    el.style.cssText += '; opacity: 0 !important; -webkit-transition: opacity ' + config.transitionSpeed + 's ease-in-out !important; transition: opacity ' + config.transitionSpeed + 's ease-in-out !important;';
+                }
+            }
+
+            var transitionMs = (config.transitionSpeed || 0.55) * 1000;
+
+            // 2. Hide display entirely right before redirect so browser repaint never resurrects visibility
+            setTimeout(function() {
+                for (var j = 0; j < ids.length; j++) {
+                    var elem = document.getElementById(ids[j]);
+                    if (elem) {
+                        elem.style.display = 'none';
+                    }
+                }
+
+                if (typeof forceRefresh === 'function') {
+                    forceRefresh(e);
+                } else {
+                    window.location.href = window.location.pathname + '?r=' + new Date().getTime();
+                }
+            }, transitionMs);
+        }
     </script>
     <script src="script.js?v=1.0"></script>
     <script>
