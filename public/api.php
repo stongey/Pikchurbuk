@@ -222,7 +222,7 @@ if (!empty($faces) && is_array($faces)) {
         $peopleList[] = "<span style='white-space: nowrap;'>" . htmlspecialchars($name) . ($age ? " <span style='font-size: 0.85em; opacity: 0.7;'>($age)</span>" : "") . "</span>";
 
         // Extract first name for fallback description
-        $honorificsPattern = '/^(dr|fr|mr|ms|mrs|prof|rev|sr|br|msgr|reverend|father|doctor|mme|m|)\.?$/i';
+        $honorificsPattern = '/^(dr|fr|mr|ms|mrs|prof|rev|sr|br|msgr|reverend|father|doctor|mme|m|deacon|)\.?$/i';
         $cleanName = preg_replace('/\s+/', ' ', trim($name));
         $nameParts = explode(' ', trim($cleanName));
         
