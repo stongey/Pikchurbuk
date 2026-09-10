@@ -76,7 +76,7 @@ To prevent the geocoding cache from growing indefinitely, set up a daily cron jo
 
 ## Credits
 
-Developed by Stongey. Icons generated via SVG. Maps provided by OpenStreetMap/Leaflet.
+Developed by Stongey. Maps provided by OpenStreetMap/Leaflet.
 
 ## License
 
