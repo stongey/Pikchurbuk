@@ -273,6 +273,7 @@ $info = [
     'Size'       => Metadata::formatFileSize($rawSize),
     'File'       => $asset['originalPath'] ?? '',
     'Location'   => ($lat && $lon) ? sprintf("%.4f, %.4f", $lat, $lon) : $address,
+    'datetime'   => $exif['dateTimeOriginal'] ?? '',
 ];
 
 $mapData = ($lat && $lon) ? ['lat' => $lat, 'lon' => $lon] : null;

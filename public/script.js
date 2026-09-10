@@ -173,11 +173,81 @@ function showMap(lat, lon) {
     }
 }
 
+function formatExifFullDate(dateString) {
+    if (!dateString) return '';
+
+    var d;
+
+    // Matches: YYYY-MM-DD T HH:mm:ss (.ms)? (Z | (+/-)HH:mm)
+    var match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:(Z)|([+-])(\d{2}):(\d{2}))?/.exec(dateString);
+
+    if (match) {
+        var year = parseInt(match[1], 10);
+        var monthIndex = parseInt(match[2], 10) - 1; // 0-indexed
+        var day = parseInt(match[3], 10);
+        var hours = parseInt(match[4], 10);
+        var minutes = parseInt(match[5], 10);
+        var seconds = parseInt(match[6], 10);
+
+        if (match[7] === 'Z' || match[8]) {
+            // Calculate base UTC time
+            var utcMs = Date.UTC(year, monthIndex, day, hours, minutes, seconds);
+
+            // Subtract/add timezone offset from string to convert to strict UTC
+            if (match[8]) {
+                var sign = match[8] === '+' ? 1 : -1;
+                var tzHours = parseInt(match[9], 10);
+                var tzMins = parseInt(match[10], 10);
+                var offsetMs = ((tzHours * 60) + tzMins) * 60 * 1000 * sign;
+                utcMs -= offsetMs;
+            }
+
+            // Create Date object representing local device time
+            d = new Date(utcMs);
+        } else {
+            // Fallback for strings with no offset specified
+            d = new Date(year, monthIndex, day, hours, minutes, seconds);
+        }
+    } else {
+        d = new Date(dateString);
+    }
+
+    if (isNaN(d.getTime())) return dateString;
+
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    var dayName = days[d.getDay()];
+    var monthName = months[d.getMonth()];
+    var dayNum = d.getDate();
+    var displayYear = d.getFullYear();
+
+    var displayHours = d.getHours();
+    var displayMinutes = d.getMinutes();
+    var ampm = displayHours >= 12 ? 'pm' : 'am';
+
+    displayHours = displayHours % 12;
+    displayHours = displayHours ? displayHours : 12; // Converts '0' to '12'
+    displayMinutes = displayMinutes < 10 ? '0' + displayMinutes : displayMinutes;
+
+    return dayName + ', ' + monthName + ' ' + dayNum + ', ' + displayYear + ' ' + displayHours + ':' + displayMinutes + ampm;
+}
+
 function toggleExif(e) {
     if (e && e.stopPropagation) e.stopPropagation();
     var overlay = document.getElementById('exifOverlay');
     var content = document.getElementById('exifContent');
-    var html = '<h1 style="font-weight: 200; text-align: left; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">Photo Details</h1>';
+
+    var rawDate = currentExif['datetime'] || '';
+    var fullDateStr = formatExifFullDate(rawDate);
+
+    var html = '' +
+        '<div class="exif-header">' +
+            '<h2>Photo Details</h2>' +
+            '<div class="exif-full-date">' + fullDateStr + '</div>' +
+        '</div>';
+    
+    // var html = '<h1 style="font-weight: 200; text-align: left; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">Photo Details</h1>';
 
     // 1. People
     if (currentExif['People']) {

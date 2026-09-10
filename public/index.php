@@ -117,6 +117,56 @@ $showName = ($_GET['showName'] ?? 'true') !== 'false' ? 'true' : 'false';
         .action-btn svg {
             pointer-events: none;
         }
+
+        /* EXIF Header Layout (iOS 9 / iPad 2 Flexbox Fix) */
+        .exif-header {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+        }
+
+        .exif-header h2 {
+            margin: 0;
+            font-weight: 300;
+            font-size: 1.4em;
+            color: #ffffff;
+        }
+
+        .exif-full-date {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 300;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* Media query for narrow screens / portrait mode */
+        @media screen and (max-width: 520px) {
+            .exif-header {
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -webkit-flex-direction: column;
+                flex-direction: column;
+                -webkit-box-align: start;
+                -webkit-align-items: flex-start;
+                align-items: flex-start;
+            }
+            .exif-full-date {
+                margin-top: 6px;
+                text-align: left;
+                white-space: normal;
+            }
+        }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> <!-- version supported by old devices -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
