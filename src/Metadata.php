@@ -160,6 +160,15 @@ class Metadata {
             if (isset($addr['ISO3166-2-lvl4']) && $addr['ISO3166-2-lvl4'] === 'BE-VLG') {
                 return 'nl';
             }
+            if (isset($addr['ISO3166-2-lvl4']) && $addr['ISO3166-2-lvl4'] === 'CH-TI') {
+                return 'it';
+            }
+            if (isset($addr['ISO3166-2-lvl4']) && in_array($addr['ISO3166-2-lvl4'], ['CH-FR','CH-GE','CH-JU','CH-NE','CH-VS','CH-VD'], true)) {
+               return 'fr';
+            }
+            if (isset($addr['ISO3166-2-lvl4']) && in_array($addr['ISO3166-2-lvl4'], ['CH-AG','CH-AR','CH-AI','CH-BL','CH-BS','CH-BE','CH-GL','CH-GR','CH-LU','CH-NW','CH-OW','CH-SG','CH-SH','CH-SZ','CH-SO','CH-TG','CH-UR','CH-ZG','CH-ZH'], true)) {
+               return 'de';
+            }
 
             $langMap = [
                 'FR' => 'fr',
